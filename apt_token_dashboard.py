@@ -111,7 +111,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Market Maker Pool (Constant Product AMM)
         # Initial setup: 10M APT tokens valued at $2.5M + 2.5M USDC
         mm_usdc_balance = 2_500_000  # 2.5M USDC
-        k_constant = mm_tokens * mm_usdc_balance  # Constant product
+        k_constant = circulating_supply * mm_usdc_balance  # Constant product
         
         # Current price calculation using AMM
         if circulating_supply > 0:
