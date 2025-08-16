@@ -78,7 +78,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     # Initial state
     circulating_supply = mm_tokens  # Only MM tokens are liquid initially
     deflator_balance = deflator_tokens
-    staked_tokens = investor_tokens * 2/3  # 2/3 initially staked
+    investor_staked_tokens = investor_tokens * 2/3  # 2/3 initially staked
+    staked_tokens = investor_staked_tokens
     liquid_investor_tokens = investor_tokens * 1/3  # 1/3 initially liquid
     
     for month in range(months):
@@ -97,74 +98,108 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Token unlock schedule
         if month >= stake_duration * 12:  # Investor tokens unlock
             if staked_tokens > 0:
-                newly_liquid = staked_tokens
-                liquid_investor_tokens += newly_liquid
-                circulating_supply += newly_liquid
-                staked_tokens = 0
+                liquid_investor_tokens += investor_staked_tokens
+                circulating_supply += investor_staked_tokens
+                staked_tokens -= investor_staked_tokens
         
         if month >= 36:  # Dev tokens unlock after 3 years
             if month == 36:
                 circulating_supply += dev_tokens
         
-        # Current price calculation (simple supply/demand model)
-        if circulating_supply > 0:
-            # Base price from initial valuation adjusted for supply
-            base_price = (FUNDING_AMOUNT / TOTAL_SUPPLY) * (TOTAL_SUPPLY / circulating_supply)
-            
-            # Revenue impact on price (positive feedback)
-            revenue_multiplier = 1 + (monthly_revenue_usd / 1_000_000) * 0.1  # 10% price boost per $1M monthly revenue
-            current_price = base_price * revenue_multiplier
-        else:
-            current_price = initial_price
+        # Market Maker Pool (Constant Product AMM)
+        # Initial setup: 10M APT tokens valued at $2.5M + 2.5M USDC
+        mm_usdc_balance = 2_500_000  # 2.5M USDC
+        k_constant = mm_tokens * mm_usdc_balance  # Constant product
         
-        # Revenue in APT tokens
-        if current_price > 0:
-            monthly_revenue_apt = monthly_revenue_usd / current_price
+        # Current price calculation using AMM
+        if mm_tokens > 0:
+            # Price = USDC reserve / APT reserve (price of 1 APT in USDC)
+            current_price = mm_usdc_balance / mm_tokens
+        else:
+            current_price = initial_price  # Fallback to initial price
+        
+        # Revenue in APT tokens (buying APT with USD revenue)
+        if monthly_revenue_usd > 0 and mm_tokens > 0:
+            # Calculate how much APT we can buy with monthly_revenue_usd
+            # Using AMM formula: new_usdc = old_usdc + revenue_usd
+            # new_apt = k / new_usdc
+            # apt_received = old_apt - new_apt
+            
+            new_usdc_balance = mm_usdc_balance + monthly_revenue_usd
+            new_apt_balance = k_constant / new_usdc_balance
+            monthly_revenue_apt = mm_tokens - new_apt_balance
+            
+            # Update pool balances after the swap
+            mm_usdc_balance = new_usdc_balance
+            mm_tokens = new_apt_balance
+            
+            # Update price after the swap
+            current_price = mm_usdc_balance / mm_tokens if mm_tokens > 0 else current_price
         else:
             monthly_revenue_apt = 0
         
         # Deflation mechanism
-        tokens_to_burn = min(monthly_revenue_apt, deflator_balance)
-        deflator_balance -= tokens_to_burn
+        deflator_balance -= monthly_revenue_apt
         
-        # Staking mechanics
-        total_liquid_tokens = circulating_supply - staked_tokens
+        # Staking mechanics and token burning
+        # total_liquid_tokens = circulating_supply - staked_tokens
+        stake_weight = staked_tokens / TOTAL_SUPPLY if TOTAL_SUPPLY > 0 else 0
         
+        # Calculate staker allocation based on stake weight
+        staker_alloc = monthly_revenue_apt * stake_weight
+        
+        # Determine tokens to burn based on staking scenarios
+        if staked_tokens == 0:
+            # No tokens staked: burn all revenue APT + matching amount from deflator
+            revenue_apt_to_burn = monthly_revenue_apt
+            deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
+            total_tokens_burned = revenue_apt_to_burn + deflator_matching_burn
+            
+        elif stake_weight >= 1.0:  # All tokens are staked
+            # All tokens staked: no revenue APT burned, only deflator tokens if available
+            revenue_apt_to_burn = 0
+            deflator_matching_burn = min(monthly_revenue_apt, deflator_balance) if deflator_balance > 0 else 0
+            total_tokens_burned = deflator_matching_burn
+            
+        else:
+            # Partial staking: burn (revenue_apt - staker_alloc) + deflator matching
+            revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
+            deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
+            total_tokens_burned = revenue_apt_to_burn + deflator_matching_burn
+        
+        # Update deflator balance
+        deflator_balance -= deflator_matching_burn
+        
+        # Calculate annual yield for stakers
+        if staked_tokens > 0:
+            annual_yield_pct = (staker_alloc * 12) / staked_tokens
+        else:
+            annual_yield_pct = 0
+
         if mode == "Yield-Based Auto Staking" and total_liquid_tokens > 0:
-            # Calculate annual yield
-            annual_revenue_apt = monthly_revenue_apt * 12
-            if staked_tokens > 0:
-                annual_yield = (annual_revenue_apt * 0.7) / staked_tokens  # 70% of revenue goes to stakers
-            else:
-                annual_yield = 0
+            # # Calculate annual yield
+            # annual_revenue_apt = monthly_revenue_apt * 12
+            # if staked_tokens > 0:
+            #     annual_yield = (annual_revenue_apt * 0.7) / staked_tokens
+            # else:
+            #     annual_yield = 0
             
             # Staking percentage based on yield: f(2x) function
-            target_stake_pct = min(annual_yield * 2, 1.0)  # Cap at 100%
+            target_stake_pct = min(annual_yield_pct * 2, 1.0)  # Cap at 100%
             
             # Adjust staking if yield < 8% (unstaking threshold)
-            if annual_yield < 0.08:
-                target_stake_pct *= 0.5  # Reduce staking when yield is low
+            if annual_yield_pct < 0.08:
+                target_stake_pct = 0  # Reduce staking when yield is low
         else:
-            target_stake_pct = liquid_stake_pct if liquid_stake_pct else 0.5
+            target_stake_pct = liquid_stake_pct if liquid_stake_pct else 0
         
         # Apply staking changes gradually
-        target_staked = total_liquid_tokens * target_stake_pct
-        staking_adjustment = (target_staked - staked_tokens) * 0.1  # 10% adjustment per month
-        staked_tokens = max(0, staked_tokens + staking_adjustment)
-        
-        # Staker rewards
-        staker_rewards = monthly_revenue_apt * 0.7 if staked_tokens > 0 else 0
-        additional_burn = monthly_revenue_apt * 0.3  # Remaining 30% burned
-        
+        staked_tokens = (circulating_supply * target_stake_pct) + investor_staked_tokens
+                
         # Calculate metrics
         fdv = current_price * TOTAL_SUPPLY
         market_cap = current_price * circulating_supply
-        
-        if staked_tokens > 0:
-            annual_yield_pct = (staker_rewards * 12) / staked_tokens * 100
-        else:
-            annual_yield_pct = 0
-        
+                
         results.append({
             'Month': month + 1,
             'Price': current_price,
