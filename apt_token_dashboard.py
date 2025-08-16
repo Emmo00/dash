@@ -169,6 +169,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         
         # Update deflator balance
         deflator_balance -= deflator_matching_burn
+        tokens_to_burn = deflator_matching_burn + revenue_apt_to_burn
         
         # Calculate annual yield for stakers
         if staked_tokens > 0:
