@@ -155,16 +155,16 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
 
         # Determine target stake percentage
         if mode == "Yield-Based Auto Staking":
-            if annual_yield_pct < 0.08:
-                target_stake_pct = 0
-            else:
-                target_stake_pct = min(annual_yield_pct * 2, 1.0)
+            # if annual_yield_pct < 0.08:
+            #     target_stake_pct = 0
+            # else:
+            target_stake_pct = min(annual_yield_pct * 2, 1.0)
         else:
             target_stake_pct = liquid_stake_pct if liquid_stake_pct is not None else 0
         
         # Adjust voluntary staking
         total_stakable = holder_liquid + (staked_tokens - investor_staked_tokens)
-        voluntary_staked = target_stake_pct * total_stakable
+        voluntary_staked = min(target_stake_pct * total_supply, total_stakable)
         staked_tokens = investor_staked_tokens + voluntary_staked
         holder_liquid = total_stakable - voluntary_staked
         circulating_supply = circulating_supply + holder_liquid
