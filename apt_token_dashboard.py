@@ -58,6 +58,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     """Calculate token economics over time"""
     
     # Token allocations
+    global TOTAL_SUPPLY
     investor_tokens = TOTAL_SUPPLY * investor_alloc
     deflator_tokens = TOTAL_SUPPLY * (0.8 - investor_alloc)  # Remaining up to 80%
     mm_tokens = TOTAL_SUPPLY * MARKET_MAKER_ALLOCATION
@@ -170,7 +171,6 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         deflator_balance -= deflator_matching_burn
         tokens_to_burn = deflator_matching_burn + revenue_apt_to_burn
         circulating_supply -= revenue_apt_to_burn
-        global TOTAL_SUPPLY
         TOTAL_SUPPLY -= tokens_to_burn
         
         # Calculate annual yield for stakers
