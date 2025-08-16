@@ -53,6 +53,7 @@ KWH_PRICE = 0.17  # $0.17 per kWh
 HOURS_PER_DAY = 4  # 4 hours of generation per day
 DAYS_PER_YEAR = 365
 DEPLOYMENT_MONTHS = 10
+k_constant = circulating_supply * mm_usdc_balance  # Constant product
 
 def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=None, mode="Manual Control"):
     """Calculate token economics over time"""
