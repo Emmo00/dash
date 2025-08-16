@@ -76,15 +76,14 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     results = []
     
     # Initial state
-    circulating_supply = mm_tokens + holder_liquid  # Liquid (circulating) supply
-    pool_usdc = circulating_supply * initial_price
-    k_constant = circulating_supply * pool_usdc if circulating_supply > 0 else 0
-
     holder_liquid = investor_tokens * (1/3)  # 1/3 initially liquid
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     staked_tokens = investor_staked_tokens
     deflator_balance = deflator_tokens
     total_supply = TOTAL_SUPPLY
+    circulating_supply = mm_tokens + holder_liquid  # Liquid (circulating) supply
+    pool_usdc = circulating_supply * initial_price
+    k_constant = circulating_supply * pool_usdc if circulating_supply > 0 else 0
 
     for month in range(months):
         # Deployment phase (first 10 months)
