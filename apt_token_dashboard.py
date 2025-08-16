@@ -114,9 +114,9 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         k_constant = mm_tokens * mm_usdc_balance  # Constant product
         
         # Current price calculation using AMM
-        if mm_tokens > 0:
+        if circulating_supply > 0:
             # Price = USDC reserve / APT reserve (price of 1 APT in USDC)
-            current_price = mm_usdc_balance / mm_tokens
+            current_price = mm_usdc_balance / circulating_supply
         else:
             current_price = initial_price  # Fallback to initial price
         
@@ -129,11 +129,11 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             
             new_usdc_balance = mm_usdc_balance + monthly_revenue_usd
             new_apt_balance = k_constant / new_usdc_balance
-            monthly_revenue_apt = mm_tokens - new_apt_balance
+            monthly_revenue_apt = circulating_supply - new_apt_balance
             
             # Update pool balances after the swap
             mm_usdc_balance = new_usdc_balance
-            mm_tokens = new_apt_balance
+            circulating_supply = new_apt_balance
             
             # Update price after the swap
             current_price = mm_usdc_balance / mm_tokens if mm_tokens > 0 else current_price
