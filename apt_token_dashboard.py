@@ -78,9 +78,9 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     # Initial state
     circulating_supply = mm_tokens  # Only MM tokens are liquid initially
     deflator_balance = deflator_tokens
+    liquid_investor_tokens = investor_tokens * 1/3  # 1/3 initially liquid
     investor_staked_tokens = investor_tokens * 2/3  # 2/3 initially staked
     staked_tokens = investor_staked_tokens
-    liquid_investor_tokens = investor_tokens * 1/3  # 1/3 initially liquid
     
     for month in range(months):
         # Deployment phase (first 10 months)
@@ -142,7 +142,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         deflator_balance -= monthly_revenue_apt
         
         # Staking mechanics and token burning
-        # total_liquid_tokens = circulating_supply - staked_tokens
+        total_liquid_tokens = circulating_supply - staked_tokens
         stake_weight = staked_tokens / TOTAL_SUPPLY if TOTAL_SUPPLY > 0 else 0
         
         # Calculate staker allocation based on stake weight
@@ -213,7 +213,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             'Tokens_Burned': tokens_to_burn,
             'Deflator_Balance': deflator_balance,
             'Annual_Yield_Pct': annual_yield_pct,
-            'Stake_Percentage': (staked_tokens / total_liquid_tokens * 100) if total_liquid_tokens > 0 else 0,
+            'Stake_Percentage': (staked_tokens / TOTAL_SUPPLY * 100),
             'Solar_Capacity_MW': current_capacity
         })
     
