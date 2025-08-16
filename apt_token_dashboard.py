@@ -101,10 +101,12 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
                 liquid_investor_tokens += investor_staked_tokens
                 circulating_supply += investor_staked_tokens
                 staked_tokens -= investor_staked_tokens
+                investor_staked_tokens = 0
         
         if month >= 36:  # Dev tokens unlock after 3 years
             if month == 36:
                 circulating_supply += dev_tokens
+                dev_tokens = 0
         
         # Market Maker Pool (Constant Product AMM)
         # Initial setup: 10M APT tokens valued at $2.5M + 2.5M USDC
