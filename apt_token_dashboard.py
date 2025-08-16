@@ -139,10 +139,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             current_price = mm_usdc_balance / mm_tokens if mm_tokens > 0 else current_price
         else:
             monthly_revenue_apt = 0
-        
-        # Deflation mechanism
-        deflator_balance -= monthly_revenue_apt
-        
+                
         # Staking mechanics and token burning
         total_liquid_tokens = circulating_supply - staked_tokens
         stake_weight = staked_tokens / TOTAL_SUPPLY if TOTAL_SUPPLY > 0 else 0
@@ -172,6 +169,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Update deflator balance
         deflator_balance -= deflator_matching_burn
         tokens_to_burn = deflator_matching_burn + revenue_apt_to_burn
+        circulating_supply - tokens_to_burn
         
         # Calculate annual yield for stakers
         if staked_tokens > 0:
