@@ -76,14 +76,13 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     results = []
     
     # Initial state
-    pool_apt = mm_tokens
-    pool_usdc = pool_apt * initial_price
-    k_constant = pool_apt * pool_usdc if pool_apt > 0 else 0
+    pool_usdc = circulating_supply * initial_price
+    k_constant = circulating_supply * pool_usdc if circulating_supply > 0 else 0
 
     holder_liquid = investor_tokens * (1/3)  # 1/3 initially liquid
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     staked_tokens = investor_staked_tokens
-    circulating_supply = pool_apt + holder_liquid  # Liquid (circulating) supply
+    circulating_supply = circulating_supply + holder_liquid  # Liquid (circulating) supply
     deflator_balance = deflator_tokens
     total_supply = TOTAL_SUPPLY
 
@@ -115,24 +114,24 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
                 dev_locked = 0
                 
         # Current price
-        current_price = pool_usdc / pool_apt if pool_apt > 0 else initial_price
+        current_price = pool_usdc / circulating_supply if circulating_supply > 0 else initial_price
         
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
         monthly_revenue_apt = 0
-        if monthly_revenue_usd > 0 and pool_apt > 0:
+        if monthly_revenue_usd > 0 and circulating_supply > 0:
             new_usdc = pool_usdc + monthly_revenue_usd
             new_apt = k_constant / new_usdc
-            monthly_revenue_apt = pool_apt - new_apt
+            monthly_revenue_apt = circulating_supply - new_apt
             
             # Update pool balances after the swap
             pool_usdc = new_usdc
-            pool_apt = new_apt
+            circulating_supply = new_apt
             
             # Update circulating supply (APT removed from pool)
             circulating_supply -= monthly_revenue_apt
             
             # Update price after the swap
-            current_price = pool_usdc / pool_apt if pool_apt > 0 else current_price
+            current_price = pool_usdc / circulating_supply if circulating_supply > 0 else current_price
                 
         # Staking mechanics and token burning
         stake_weight = staked_tokens / total_supply if total_supply > 0 else 0
@@ -169,7 +168,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         voluntary_staked = target_stake_pct * total_stakable
         staked_tokens = investor_staked_tokens + voluntary_staked
         holder_liquid = total_stakable - voluntary_staked
-        circulating_supply = pool_apt + holder_liquid
+        circulating_supply = circulating_supply + holder_liquid
                 
         # Calculate metrics
         fdv = current_price * total_supply
