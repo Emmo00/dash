@@ -189,7 +189,7 @@ with col1:
     
     # Supply and staking
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['Circulating_Supply']/1e6, 2), name='Circulating Supply (M)', 
+        go.Scatter(x=df['Month'], y=round(df['Circulating_Supply']/1e6, 2), name='Circulating Supply (M)', 
                   line=dict(color='#FF6692', width=3)),
         row=2, col=1
     )
