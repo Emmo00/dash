@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
 
-# Page configuration
+# Page configurat
 st.set_page_config(page_title="APT Token Economy Dashboard", layout="wide")
 
 st.title("🪙 APT Token Economy Simulation Dashboard")
