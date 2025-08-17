@@ -92,20 +92,19 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         else:
             current_capacity = solar_capacity_mw
             current_annual_revenue = annual_revenue_usd
-        
-        
+
         # Token unlock schedule
         if month >= stake_duration * 12:
             if investor_staked_tokens > 0:
                 circulating_supply += investor_staked_tokens
                 staked_tokens -= investor_staked_tokens
                 investor_staked_tokens = 0
-        
+
         if month >= 36:
             if month == 36:
                 circulating_supply += dev_locked
                 dev_locked = 0
-                        
+
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
         monthly_revenue_usd = current_annual_revenue / 12
         pool_usdc += monthly_revenue_usd
@@ -125,7 +124,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
         circulating_supply -= revenue_apt_to_burn
         total_supply -= (revenue_apt_to_burn + deflator_matching_burn)
-        
+
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens
         # Determine target stake percentage
@@ -133,7 +132,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             # if annual_yield_pct < 0.08:
             #     target_stake_pct = 0
             # else:
-            target_stake_pct = min(annual_yield_pct * 2, 1.0)
+            target_stake_pct = min(annual_yield_pct * 2, .99)
         else:
             target_stake_pct = liquid_stake_pct if liquid_stake_pct is not None else 0
 
@@ -148,7 +147,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Calculate metrics
         fdv = current_price * total_supply
         market_cap = current_price * circulating_supply
-                
+
         results.append({
             'Month': month + 1,
             'Price': current_price,
@@ -164,7 +163,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             'Stake_Percentage': (staked_tokens / total_supply * 100),
             'Solar_Capacity_MW': current_capacity
         })
-    
+
     return pd.DataFrame(results)
 
 # Calculate results
