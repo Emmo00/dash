@@ -80,7 +80,7 @@ def calculate_token_economics(investor_alloc, stake_duration):
     total_supply = TOTAL_SUPPLY
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     circulating_supply = mm_tokens + (investor_tokens * (1/3))  # 1/3 initially liquid (circulating) supply
-    staked_tokens = investor_staked_tokens + dev_locked
+    staked_tokens = investor_staked_tokens  # + dev_locked
 
     for month in range(months):
         # Deployment phase (first 10 months)
