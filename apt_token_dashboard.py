@@ -79,8 +79,6 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     total_supply = TOTAL_SUPPLY
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     circulating_supply = mm_tokens + (investor_tokens * (1/3))  # 1/3 initially liquid (circulating) supply
-    pool_usdc = circulating_supply * initial_price
-    k_constant = circulating_supply * pool_usdc
     staked_tokens = investor_staked_tokens
 
     for month in range(months):
@@ -107,9 +105,14 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
 
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
         monthly_revenue_usd = current_annual_revenue / 12
-        pool_usdc += monthly_revenue_usd
-        new_apt = k_constant / pool_usdc
-        monthly_revenue_apt = circulating_supply - new_apt
+        # Use a fixed price or gradually appreciating price
+        # This assumes energy customers buy at market price, not through AMM
+        monthly_revenue_apt = monthly_revenue_usd / current_price
+        
+        # Update price based on supply changes (burns) rather than AMM
+        # Price appreciates as supply decreases
+        supply_ratio = total_supply / TOTAL_SUPPLY
+        current_price = initial_price / supply_ratio  # Price inversely related to supply
 
         # Staking mechanics and token burning
         total_stakable = circulating_supply + staked_tokens
@@ -140,9 +143,6 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         target_stake_total = target_stake_pct * total_stakable
         staked_tokens = max(target_stake_total, investor_staked_tokens)
         circulating_supply = total_stakable - staked_tokens
-
-        # Update price after the swap
-        current_price = pool_usdc / circulating_supply
 
         # Calculate metrics
         fdv = current_price * total_supply
