@@ -107,10 +107,10 @@ def calculate_token_economics(investor_alloc, stake_duration):
         annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
         # Determine target stake percentage
 
-        # if annual_yield_pct < 0.08:
-        #     target_stake_pct = 0
-        # else:
-        target_stake_pct = min(annual_yield_pct * 2, .99)
+        if annual_yield_pct < 0.08:
+            target_stake_pct = 0
+        else:
+            target_stake_pct = min(annual_yield_pct * 2, .99)
 
         # Token unlock schedule
         if month >= stake_duration * 12 and investor_staked_tokens > 0:
@@ -176,32 +176,32 @@ with col1:
     
     # Price and valuation
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['Price'], name='Token Price ($)', 
+        go.Scatter(x=df['Month'], y=round(df['Price'], name='Token Price ($)', 2), 
                   line=dict(color='#00CC96', width=3)),
         row=1, col=1
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['FDV']/1e6, name='FDV ($M)', 
+        go.Scatter(x=df['Month'], y=round(df['FDV']/1e6, name='FDV ($M)', 2), 
                   line=dict(color='#AB63FA', width=2, dash='dash')),
         row=1, col=1, secondary_y=True
     )
     
     # Supply and staking
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['Circulating_Supply']/1e6, name='Circulating Supply (M)', 
+        go.Scatter(x=df['Month'], y=df['Circulating_Supply']/1e6, name='Circulating Supply (M)', 2), 
                   line=dict(color='#FF6692', width=3)),
         row=2, col=1
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['Staked_Tokens']/1e6, name='Staked Tokens (M)', 
+        go.Scatter(x=df['Month'], y=round(df['Staked_Tokens']/1e6, name='Staked Tokens (M)', 2), 
                   line=dict(color='#19D3F3', width=2)),
         row=2, col=1
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['Annual_Yield_Pct'], name='Annual Yield (%)', 
+        go.Scatter(x=df['Month'], y=round(df['Annual_Yield_Pct'], name='Annual Yield (%)', 2), 
                   line=dict(color='#FFA15A', width=2, dash='dot')),
         row=2, col=1, secondary_y=True
     )
@@ -247,7 +247,7 @@ with col3:
     
     fig_burn = go.Figure()
     fig_burn.add_trace(go.Scatter(
-        x=df['Month'], y=df['Cumulative_Burned']/1e6,
+        x=df['Month'], y=round(df['Cumulative_Burned']/1e6, 2),
         name='Cumulative Burned (M)',
         fill='tonexty',
         line=dict(color='#FF4B4B', width=2)
@@ -265,18 +265,18 @@ with col3:
 with col4:
     fig_deflation = make_subplots(specs=[[{"secondary_y": True}]])
     fig_deflation.add_trace(go.Scatter(
-        x=df['Month'], y=df['Deflator_Balance']/1000,
+        x=df['Month'], y=round(df['Deflator_Balance']/1000, 2),
         name='Deflator Balance (K)',
         line=dict(color='#00CC96', width=3)
     ))
 
     fig_deflation.add_trace(
-        go.Scatter(x=df['Month'], y=df['Stake_Target']/1000, name='Target Percentage APT Staked (k)', 
+        go.Scatter(x=df['Month'], y=round(df['Stake_Target']/1000, 2), name='Target Percentage APT Staked (k)', 
                   line=dict(color='#FFA15A', width=2, dash='dot')), secondary_y=True
     )
 
     fig_deflation.add_trace(
-        go.Scatter(x=df['Month'], y=df['Stake_Tokens']/1000, name='Actual APT Staked (k)', 
+        go.Scatter(x=df['Month'], y=round(df['Stake_Tokens']/1000, 2), name='Actual APT Staked (k)', 
                   line=dict(width=2, dash='dot')), secondary_y=True
     )
     
