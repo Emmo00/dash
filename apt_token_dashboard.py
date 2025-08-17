@@ -23,51 +23,51 @@ st.sidebar.header("📊 Economic Parameters")
 
 # Core parameters
 with st.sidebar.expander("Simulation Setup"):
-    months = st.sidebar.slider(
+    months = st.slider(
         "Simulation Duration (months)", 
         min_value=18, max_value=96, value=48, step=1,
         help="Simulation Duration"
     )
     
 with st.sidebar.expander("Token Setup"):
-    investor_allocation = st.sidebar.slider(
+    investor_allocation = st.slider(
         "Investor Allocation %", 
         min_value=0.0, max_value=80.0, value=40.0, step=1.0,
         help="Percentage of total supply allocated to investors"
     ) / 100
     
-    investor_stake_duration = st.sidebar.slider(
+    investor_stake_duration = st.slider(
         "Investor Stake Duration (months)", 
         min_value=0, max_value=60, value=24, step=1,
         help="How long investor tokens are locked in staking"
     )
     
-    TOTAL_SUPPLY =  st.sidebar.slider(
+    TOTAL_SUPPLY =  st.slider(
         "Total Supply", 
         min_value=500_000, max_value=1_000_000_000, value=100_000_000, step=1_000_000,
         help="Total token supply"
     )
     
 with st.sidebar.expander("Cashflow Setup"):
-    FUNDING_AMOUNT =  st.sidebar.slider(
+    FUNDING_AMOUNT =  st.slider(
         "Funding Amount", 
         min_value=1_000_000, max_value=50_000_000, value=10_000_000, step=1_000_000,
         help="Funding amount"
     )
     
-    SOLAR_COST_PER_MW =  st.sidebar.slider(
+    SOLAR_COST_PER_MW =  st.slider(
         "Solar Cost per Mega Watt Capacity", 
         min_value=500_000, max_value=1_000_000, value=700_000, step=100_000,
         help="Solar Cost per Mega Watt Capacity"
     )
     
-    KWH_PRICE =  st.sidebar.slider(
+    KWH_PRICE =  st.slider(
         "Price for KiloWatt, per Hour", 
         min_value=0.06, max_value=0.20, value=0.17, step=0.01,
         help="Kilo Watt Price"
     )
     
-    DEPLOYMENT_MONTHS = st.sidebar.slider(
+    DEPLOYMENT_MONTHS = st.slider(
         "Deployment Months", 
         min_value=1, max_value=24, value=10, step=1,
         help="Time to deploy Projects"
