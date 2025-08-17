@@ -109,7 +109,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         
         # Staking mechanics and token burning
         total_stakable = circulating_supply + staked_tokens
-        supply_ratio = circulating_supply / total_stakable
+        supply_ratio =  total_stakable / TOTAL_SUPPLY
+        # supply_ratio = circulating_supply / total_stakable
         stake_weight = staked_tokens / total_stakable
         staker_alloc = monthly_revenue_apt * stake_weight
         current_price = initial_price / supply_ratio  # Price inversely related to supply
