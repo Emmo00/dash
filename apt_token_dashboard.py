@@ -262,20 +262,28 @@ with col3:
 
 with col4:
     # Revenue breakdown
-    fig_revenue = go.Figure()
-    fig_revenue.add_trace(go.Scatter(
-        x=df['Month'], y=df['Monthly_Revenue_USD']/1000,
-        name='Monthly Revenue ($K)',
+    fig_deflation = go.Figure()
+    fig_deflation.add_trace(go.Scatter(
+        x=df['Month'], y=df['Deflator_Balance']/1000,
+        name='Deflator Balance (K)',
         line=dict(color='#00CC96', width=3)
     ))
+
+    fig.add_trace(
+        go.Scatter(x=df['Month'], y=df['Stake_Percentage'], name='Percentage APT Staked (%)', 
+                  line=dict(color='#FFA15A', width=2, dash='dot')),
+        row=2, col=1, secondary_y=True
+    )
     
-    fig_revenue.update_layout(
-        title="Monthly Revenue Growth",
+    fig_deflation.update_layout(
+        title="Deflator Balance Burn",
         xaxis_title="Month",
-        yaxis_title="Revenue ($K)",
         height=400
     )
     
+    fig_deflation.update_yaxes(title_text="Balance (K)")
+    fig_deflation.update_yaxes(title_text="Staked (%)", secondary_y=True)
+
     st.plotly_chart(fig_revenue, use_container_width=True)
 
 # Summary statistics
