@@ -271,8 +271,7 @@ with col4:
 
     fig_deflation.add_trace(
         go.Scatter(x=df['Month'], y=df['Stake_Percentage'], name='Percentage APT Staked (%)', 
-                  line=dict(color='#FFA15A', width=2, dash='dot')),
-        row=2, col=1, secondary_y=True
+                  line=dict(color='#FFA15A', width=2, dash='dot')), secondary_y=True
     )
     
     fig_deflation.update_layout(
