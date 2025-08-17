@@ -72,7 +72,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     annual_revenue_usd = annual_kwh * KWH_PRICE
     
     # Time series simulation (48 months = 4 years)
-    months = 48
+    months = 23
     results = []
     
     # Initial state
