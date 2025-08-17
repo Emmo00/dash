@@ -243,7 +243,7 @@ with col3:
     # Cumulative burn chart
     df['Cumulative_Burned'] = df['Tokens_Burned'].cumsum()
     
-    fig_deflation = go.Figure()
+    fig_burn = go.Figure()
     fig_burn.add_trace(go.Scatter(
         x=df['Month'], y=df['Cumulative_Burned']/1e6,
         name='Cumulative Burned (M)',
@@ -262,7 +262,7 @@ with col3:
 
 with col4:
     # Revenue breakdown
-    fig_burn = go.Figure(specs=[[{"secondary_y": True}]])
+    fig_deflation = go.Figure(specs=[[{"secondary_y": True}]])
     fig_deflation.add_trace(go.Scatter(
         x=df['Month'], y=df['Deflator_Balance']/1000,
         name='Deflator Balance (K)',
