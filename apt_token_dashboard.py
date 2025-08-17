@@ -54,7 +54,7 @@ HOURS_PER_DAY = 4  # 4 hours of generation per day
 DAYS_PER_YEAR = 365
 DEPLOYMENT_MONTHS = 10
 
-def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=None, mode="Manual Control"):
+def calculate_token_economics(investor_alloc, stake_duration):
     """Calculate token economics over time"""
     
     # Token allocations
@@ -161,7 +161,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     return pd.DataFrame(results)
 
 # Calculate results
-df = calculate_token_economics(investor_allocation, investor_stake_duration, None, mode)
+df = calculate_token_economics(investor_allocation, investor_stake_duration)
 
 # Main dashboard
 col1, col2 = st.columns([2, 1])
