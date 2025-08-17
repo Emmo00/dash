@@ -114,6 +114,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         if monthly_revenue_usd > 0 and circulating_supply > 0:
             new_usdc = pool_usdc + monthly_revenue_usd
             new_apt = k_constant / new_usdc
+            new_apt
             monthly_revenue_apt = circulating_supply - new_apt
             
             # Update pool balances after the swap
