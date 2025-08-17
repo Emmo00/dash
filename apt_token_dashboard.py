@@ -269,7 +269,7 @@ with col4:
         line=dict(color='#00CC96', width=3)
     ))
 
-    fig.add_trace(
+    fig_deflation.add_trace(
         go.Scatter(x=df['Month'], y=df['Stake_Percentage'], name='Percentage APT Staked (%)', 
                   line=dict(color='#FFA15A', width=2, dash='dot')),
         row=2, col=1, secondary_y=True
@@ -277,10 +277,10 @@ with col4:
     
     fig_deflation.update_layout(
         title="Deflator Balance Burn",
-        height=400
+        height=400, showlegend=True, hovermode='x unified'
     )
 
-    fig.update_xaxes(title_text="Month")
+    fig_deflation.update_xaxes(title_text="Month")
     fig_deflation.update_yaxes(title_text="Balance (K)")
     fig_deflation.update_yaxes(title_text="Staked (%)", secondary_y=True)
 
