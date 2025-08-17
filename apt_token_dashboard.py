@@ -65,6 +65,12 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     
     # Initial pricing
     initial_price = FUNDING_AMOUNT / investor_tokens
+    current_price = initial_price
+
+# Update price based on supply changes (burns) rather than AMM
+# Price appreciates as supply decreases
+supply_ratio = total_supply / TOTAL_SUPPLY
+current_price = initial_price / supply_ratio  # Price inversely related to supply
     
     # Solar capacity calculation
     solar_capacity_mw = FUNDING_AMOUNT / SOLAR_COST_PER_MW
