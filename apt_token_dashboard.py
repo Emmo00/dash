@@ -116,15 +116,6 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         stake_weight = staked_tokens / total_stakable
         staker_alloc = monthly_revenue_apt * stake_weight
 
-        # Deflator matching burn
-        deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
-        deflator_balance -= deflator_matching_burn
-
-        # Burn the rest of revenue APT
-        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
-        circulating_supply -= revenue_apt_to_burn
-        total_supply -= (revenue_apt_to_burn + deflator_matching_burn)
-
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
         # Determine target stake percentage
@@ -140,6 +131,15 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         target_stake_total = target_stake_pct * total_stakable
         staked_tokens = max(target_stake_total, investor_staked_tokens)
         circulating_supply = total_stakable - staked_tokens
+
+        # Deflator matching burn
+        deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
+        deflator_balance -= deflator_matching_burn
+
+        # Burn the rest of revenue APT
+        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
+        circulating_supply -= revenue_apt_to_burn
+        total_supply -= (revenue_apt_to_burn + deflator_matching_burn)
 
         # Calculate metrics
         fdv = current_price * total_supply
