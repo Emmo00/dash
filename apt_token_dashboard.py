@@ -76,12 +76,11 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     results = []
     
     # Initial state
-    holder_liquid = investor_tokens * (1/3)  # 1/3 initially liquid
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     staked_tokens = investor_staked_tokens
     deflator_balance = deflator_tokens
     total_supply = TOTAL_SUPPLY
-    circulating_supply = mm_tokens + holder_liquid  # Liquid (circulating) supply
+    circulating_supply = mm_tokens + investor_tokens * (1/3)  # 1/3 initially liquid (circulating) supply
     pool_usdc = circulating_supply * initial_price
     k_constant = circulating_supply * pool_usdc
 
@@ -101,14 +100,12 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Token unlock schedule
         if month >= stake_duration * 12:
             if investor_staked_tokens > 0:
-                holder_liquid += investor_staked_tokens
                 circulating_supply += investor_staked_tokens
                 staked_tokens -= investor_staked_tokens
                 investor_staked_tokens = 0
         
         if month >= 36:
             if month == 36:
-                holder_liquid += dev_locked
                 circulating_supply += dev_locked
                 dev_locked = 0
                         
@@ -127,21 +124,12 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         current_price = pool_usdc / circulating_supply
                 
         # Staking mechanics and token burning
-        total_stakable = holder_liquid + (staked_tokens - investor_staked_tokens)
-        stake_weight = staked_tokens / total_stakable 
+        total_stakable = circulating_supply + staked_tokens
+        stake_weight = staked_tokens / total_stakable
         staker_alloc = monthly_revenue_apt * stake_weight
         
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens
-
-        # Burn the rest of revenue APT
-        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
-        
-        # Deflator matching burn
-        deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
-        deflator_balance -= deflator_matching_burn
-        total_supply -= (deflator_matching_burn + revenue_apt_to_burn)
-
         # Determine target stake percentage
         if mode == "Yield-Based Auto Staking":
             # if annual_yield_pct < 0.08:
@@ -152,11 +140,18 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             target_stake_pct = liquid_stake_pct if liquid_stake_pct is not None else 0
         
         # Adjust voluntary staking
-        total_stakable = holder_liquid + (staked_tokens - investor_staked_tokens)
-        voluntary_staked = min(target_stake_pct * total_supply, total_stakable)
-        staked_tokens = investor_staked_tokens + voluntary_staked
-        holder_liquid = total_stakable - voluntary_staked
-        circulating_supply = circulating_supply + holder_liquid
+        target_stake_total = target_stake_pct * total_stakable
+        staked_tokens = max(target_stake_total, investor_staked_tokens)
+        circulating_supply -= staked_tokens
+
+        # Burn the rest of revenue APT
+        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
+        
+        # Deflator matching burn
+        deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
+        deflator_balance -= deflator_matching_burn
+        total_supply -= (deflator_matching_burn + revenue_apt_to_burn)
+
                 
         # Calculate metrics
         fdv = current_price * total_supply
