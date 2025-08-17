@@ -126,7 +126,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         total_supply -= (revenue_apt_to_burn + deflator_matching_burn)
 
         # Calculate annual yield for stakers
-        annual_yield_pct = (staker_alloc * 12) / staked_tokens
+        annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
         # Determine target stake percentage
         if mode == "Yield-Based Auto Staking":
             # if annual_yield_pct < 0.08:
