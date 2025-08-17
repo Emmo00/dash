@@ -262,7 +262,7 @@ with col3:
 
 with col4:
     # Revenue breakdown
-    fig_deflation = go.Figure(specs=[{"secondary_y": True}])
+    fig_deflation = make_subplots(specs=[[{"secondary_y": True}]])
     fig_deflation.add_trace(go.Scatter(
         x=df['Month'], y=df['Deflator_Balance']/1000,
         name='Deflator Balance (K)',
@@ -277,10 +277,10 @@ with col4:
     
     fig_deflation.update_layout(
         title="Deflator Balance Burn",
-        xaxis_title="Month",
         height=400
     )
-    
+
+    fig.update_xaxes(title_text="Month")
     fig_deflation.update_yaxes(title_text="Balance (K)")
     fig_deflation.update_yaxes(title_text="Staked (%)", secondary_y=True)
 
