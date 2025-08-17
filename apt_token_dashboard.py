@@ -176,7 +176,7 @@ with col1:
     
     # Price and valuation
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=round(df['Price'], 2), name='Token Price ($)', 
+        go.Scatter(x=df['Month'], y=round(df['Price'], 6), name='Token Price ($)', 
                   line=dict(color='#00CC96', width=3)),
         row=1, col=1
     )
