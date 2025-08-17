@@ -129,24 +129,18 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Staking mechanics and token burning
         total_stakable = holder_liquid + (staked_tokens - investor_staked_tokens)
         stake_weight = staked_tokens / total_stakable 
+        staker_alloc = monthly_revenue_apt * stake_weight
+        
+        # Calculate annual yield for stakers
+        annual_yield_pct = (staker_alloc * 12) / staked_tokens
+
+        # Burn the rest of revenue APT
+        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
         
         # Deflator matching burn
         deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
         deflator_balance -= deflator_matching_burn
-        total_supply -= deflator_matching_burn
-        
-        # Revenue split
-        staker_alloc = monthly_revenue_apt * stake_weight
-        
-        # Burn the rest of revenue APT
-        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
-        total_supply -= revenue_apt_to_burn
-        
-        # Distribute to stakers (compounding)
-        staked_tokens += staker_alloc
-        
-        # Calculate annual yield for stakers
-        annual_yield_pct = (staker_alloc * 12) / staked_tokens
+        total_supply -= (deflator_matching_burn + revenue_apt_to_burn)
 
         # Determine target stake percentage
         if mode == "Yield-Based Auto Staking":
