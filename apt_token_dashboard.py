@@ -80,7 +80,7 @@ def calculate_token_economics(investor_alloc, stake_duration):
     total_supply = TOTAL_SUPPLY
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     circulating_supply = mm_tokens + (investor_tokens * (1/3))  # 1/3 initially liquid (circulating) supply
-    staked_tokens = investor_staked_tokens
+    staked_tokens = investor_staked_tokens + dev_locked
 
     for month in range(months):
         # Deployment phase (first 10 months)
@@ -113,16 +113,11 @@ def calculate_token_economics(investor_alloc, stake_duration):
         target_stake_pct = min(annual_yield_pct * 2, .99)
 
         # Token unlock schedule
-        if month >= stake_duration * 12:
-            if investor_staked_tokens > 0:
-                circulating_supply += investor_staked_tokens
-                staked_tokens -= investor_staked_tokens
-                investor_staked_tokens = 0
+        if month >= stake_duration * 12 and investor_staked_tokens > 0:
+            investor_staked_tokens = 0
 
-        if month >= 36:
-            if month == 36:
-                circulating_supply += dev_locked
-                dev_locked = 0
+        if month >= 36 and dev_locked > 0:
+            dev_locked = 0
 
         # Adjust voluntary staking
         target_stake_total = target_stake_pct * total_stakable
