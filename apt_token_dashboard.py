@@ -64,7 +64,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     dev_locked = TOTAL_SUPPLY * DEV_ALLOCATION
     
     # Initial pricing
-    initial_price = FUNDING_AMOUNT / investor_tokens if investor_tokens > 0 else 0
+    initial_price = FUNDING_AMOUNT / investor_tokens
     
     # Solar capacity calculation
     solar_capacity_mw = FUNDING_AMOUNT / SOLAR_COST_PER_MW
@@ -83,7 +83,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     total_supply = TOTAL_SUPPLY
     circulating_supply = mm_tokens + holder_liquid  # Liquid (circulating) supply
     pool_usdc = circulating_supply * initial_price
-    k_constant = circulating_supply * pool_usdc if circulating_supply > 0 else 0
+    k_constant = circulating_supply * pool_usdc
 
     for month in range(months):
         # Deployment phase (first 10 months)
@@ -111,10 +111,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
                 holder_liquid += dev_locked
                 circulating_supply += dev_locked
                 dev_locked = 0
-                
-        # Current price
-        current_price = pool_usdc / circulating_supply if circulating_supply > 0 else initial_price
-        
+                        
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
         monthly_revenue_apt = 0
         if monthly_revenue_usd > 0 and circulating_supply > 0:
@@ -126,12 +123,12 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             circulating_supply = new_apt  # Update circulating supply (APT removed from pool)
             pool_usdc = new_usdc
             
-            # Update price after the swap
-            current_price = pool_usdc / circulating_supply if circulating_supply > 0 else current_price
+        # Update price after the swap
+        current_price = pool_usdc / circulating_supply
                 
         # Staking mechanics and token burning
         total_stakable = holder_liquid + (staked_tokens - investor_staked_tokens)
-        stake_weight = staked_tokens / total_stakable if total_stakable > 0 else 0
+        stake_weight = staked_tokens / total_stakable 
         
         # Deflator matching burn
         deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
@@ -149,7 +146,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         staked_tokens += staker_alloc
         
         # Calculate annual yield for stakers
-        annual_yield_pct = ((staker_alloc * 12) / staked_tokens) if staked_tokens > 0 else 0
+        annual_yield_pct = (staker_alloc * 12) / staked_tokens
 
         # Determine target stake percentage
         if mode == "Yield-Based Auto Staking":
@@ -183,7 +180,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             'Tokens_Burned': revenue_apt_to_burn + deflator_matching_burn,
             'Deflator_Balance': deflator_balance,
             'Annual_Yield_Pct': annual_yield_pct * 100,  # As percentage for display
-            'Stake_Percentage': (staked_tokens / total_supply * 100) if total_supply > 0 else 0,
+            'Stake_Percentage': (staked_tokens / total_supply * 100),
             'Solar_Capacity_MW': current_capacity
         })
     
