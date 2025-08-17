@@ -107,14 +107,12 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Use a fixed price or gradually appreciating price
         monthly_revenue_apt = monthly_revenue_usd / current_price
         
-        # Price appreciates as supply decreases
-        supply_ratio = (circulating_supply + staked_tokens) / total_supply
-        current_price = initial_price / supply_ratio  # Price inversely related to supply
-
         # Staking mechanics and token burning
         total_stakable = circulating_supply + staked_tokens
+        supply_ratio = circulating_supply / total_stakable
         stake_weight = staked_tokens / total_stakable
         staker_alloc = monthly_revenue_apt * stake_weight
+        current_price = initial_price / supply_ratio  # Price inversely related to supply
 
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
