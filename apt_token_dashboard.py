@@ -93,8 +93,6 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             current_capacity = solar_capacity_mw
             current_annual_revenue = annual_revenue_usd
         
-        # Monthly revenue
-        monthly_revenue_usd = current_annual_revenue / 12
         
         # Token unlock schedule
         if month >= stake_duration * 12:
@@ -109,15 +107,11 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
                 dev_locked = 0
                         
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
-        monthly_revenue_apt = 0
-        if monthly_revenue_usd > 0 and circulating_supply > 0:
-            new_usdc = pool_usdc + monthly_revenue_usd
-            new_apt = k_constant / new_usdc
-            monthly_revenue_apt = circulating_supply - new_apt
-            
-            # Update pool balances after the swap
-            pool_usdc = new_usdc
-            
+        monthly_revenue_usd = current_annual_revenue / 12
+        pool_usdc += monthly_revenue_usd
+        new_apt = k_constant / pool_usdc
+        monthly_revenue_apt = circulating_supply - new_apt
+
         # Staking mechanics and token burning
         total_stakable = circulating_supply + staked_tokens
         stake_weight = staked_tokens / total_stakable
