@@ -284,7 +284,7 @@ with col4:
     fig_deflation.update_yaxes(title_text="Balance (K)")
     fig_deflation.update_yaxes(title_text="Staked (%)", secondary_y=True)
 
-    st.plotly_chart(fig_revenue, use_container_width=True)
+    st.plotly_chart(fig_deflation, use_container_width=True)
 
 # Summary statistics
 st.subheader("📋 Simulation Summary")
