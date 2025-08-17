@@ -123,11 +123,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             monthly_revenue_apt = circulating_supply - new_apt
             
             # Update pool balances after the swap
+            circulating_supply = new_apt  # Update circulating supply (APT removed from pool)
             pool_usdc = new_usdc
-            circulating_supply = new_apt
-            
-            # Update circulating supply (APT removed from pool)
-            circulating_supply -= monthly_revenue_apt
             
             # Update price after the swap
             current_price = pool_usdc / circulating_supply if circulating_supply > 0 else current_price
