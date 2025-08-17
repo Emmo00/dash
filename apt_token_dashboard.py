@@ -8,7 +8,7 @@ import plotly.express as px
 # Page configurat
 st.set_page_config(page_title="APT Token Economy Dashboard (Alliance)", layout="wide")
 
-st.title("🪙 APT Token Economy Simulation Dashboard")
+st.title("🪙 APT (Alliance Power Token) Economy Simulation Dashboard")
 st.markdown("Interactive simulation of the APT token economy with solar infrastructure revenue model")
 
 # Sidebar controls
