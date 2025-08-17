@@ -22,6 +22,12 @@ st.sidebar.header("📊 Economic Parameters")
 # )
 
 # Core parameters
+months = st.sidebar.slider(
+    "Simulation Duration (months)", 
+    min_value=18, max_value=96, value=48, step=1,
+    help="Simulation Duration"
+)
+
 investor_allocation = st.sidebar.slider(
     "Investor Allocation %", 
     min_value=0.0, max_value=80.0, value=40.0, step=1.0,
@@ -90,8 +96,6 @@ def calculate_token_economics(investor_alloc, stake_duration):
     annual_kwh = solar_capacity_mw * 1000 * HOURS_PER_DAY * DAYS_PER_YEAR  # Convert MW to kW
     annual_revenue_usd = annual_kwh * KWH_PRICE
     
-    # Time series simulation (48 months = 4 years)
-    months = 48
     results = []
     
     # Initial state
