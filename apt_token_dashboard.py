@@ -34,25 +34,43 @@ investor_stake_duration = st.sidebar.slider(
     help="How long investor tokens are locked in staking"
 )
 
-# if mode == "Manual Control":
-#     liquid_stake_pct = st.sidebar.slider(
-#         "Liquid Token Stake %", 
-#         min_value=0.0, max_value=100.0, value=50.0, step=5.0,
-#         help="Percentage of liquid tokens that are staked"
-#     ) / 100
-# else:
+TOTAL_SUPPLY =  st.sidebar.slider(
+    "Total Supply", 
+    min_value=500_000, max_value=1_000_000_000, value=100_000_000, step=100_000,
+    help="Total token supply"
+)
+
+FUNDING_AMOUNT =  st.sidebar.slider(
+    "Funding Amount", 
+    min_value=1_000_000, max_value=50_000_000, value=10_000_000, step=1_000_000,
+    help="Funding amount"
+)
+
+SOLAR_COST_PER_MW =  st.sidebar.slider(
+    "Solar Cost per Mega Watt Capacity", 
+    min_value=500_000, max_value=1_000_000, value=700_000, step=100_000,
+    help="Solar Cost per Mega Watt Capacity"
+)
+
+KWH_PRICE =  st.sidebar.slider(
+    "Price for KiloWatt, per Hour", 
+    min_value=0.06, max_value=0.20, value=0.17, step=0.01,
+    help="Kilo Watt Price"
+)
+
+DEPLOYMENT_MONTHS = st.sidebar.slider(
+    "Deployment Months", 
+    min_value=1, max_value=24, value=10, step=1,
+    help="Time to deploy Projects"
+)
+
 st.sidebar.markdown("*Liquid Token Stake % calculated automatically based on yield*")
 
 # Constants
-TOTAL_SUPPLY = 100_000_000  # 100M tokens
-FUNDING_AMOUNT = 10_000_000  # $10M
 MARKET_MAKER_ALLOCATION = 0.10  # 10%
 DEV_ALLOCATION = 0.10  # 10%
-SOLAR_COST_PER_MW = 700_000  # $700k per MW
-KWH_PRICE = 0.17  # $0.17 per kWh
 HOURS_PER_DAY = 4  # 4 hours of generation per day
 DAYS_PER_YEAR = 365
-DEPLOYMENT_MONTHS = 10
 
 def calculate_token_economics(investor_alloc, stake_duration):
     """Calculate token economics over time"""
