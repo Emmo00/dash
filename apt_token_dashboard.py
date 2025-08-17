@@ -262,7 +262,7 @@ with col3:
 
 with col4:
     # Revenue breakdown
-    fig_deflation = go.Figure(specs=[[{"secondary_y": True}]])
+    fig_deflation = go.Figure(specs=[{"secondary_y": True}])
     fig_deflation.add_trace(go.Scatter(
         x=df['Month'], y=df['Deflator_Balance']/1000,
         name='Deflator Balance (K)',
