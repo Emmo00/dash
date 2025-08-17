@@ -108,7 +108,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         monthly_revenue_apt = monthly_revenue_usd / current_price
         
         # Price appreciates as supply decreases
-        supply_ratio = (circulating_supply + investor_staked_tokens) / (TOTAL_SUPPLY * 0.6)
+        supply_ratio = (circulating_supply + staked_tokens) / total_supply
         current_price = initial_price / supply_ratio  # Price inversely related to supply
 
         # Staking mechanics and token burning
