@@ -59,7 +59,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     
     # Token allocations
     investor_tokens = TOTAL_SUPPLY * investor_alloc
-    deflator_tokens = TOTAL_SUPPLY * (0.8 - investor_alloc)  # Remaining up to 80%
+    deflator_balance = TOTAL_SUPPLY * (0.8 - investor_alloc)  # Remaining up to 80%
     mm_tokens = TOTAL_SUPPLY * MARKET_MAKER_ALLOCATION
     dev_locked = TOTAL_SUPPLY * DEV_ALLOCATION
     
@@ -78,9 +78,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     # Initial state
     investor_staked_tokens = investor_tokens * (2/3)  # 2/3 initially staked
     staked_tokens = investor_staked_tokens
-    deflator_balance = deflator_tokens
     total_supply = TOTAL_SUPPLY
-    circulating_supply = mm_tokens + investor_tokens * (1/3)  # 1/3 initially liquid (circulating) supply
+    circulating_supply = mm_tokens + (investor_tokens * (1/3))  # 1/3 initially liquid (circulating) supply
     pool_usdc = circulating_supply * initial_price
     k_constant = circulating_supply * pool_usdc
 
@@ -114,20 +113,24 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         if monthly_revenue_usd > 0 and circulating_supply > 0:
             new_usdc = pool_usdc + monthly_revenue_usd
             new_apt = k_constant / new_usdc
-            new_apt
             monthly_revenue_apt = circulating_supply - new_apt
             
             # Update pool balances after the swap
-            circulating_supply = new_apt  # Update circulating supply (APT removed from pool)
             pool_usdc = new_usdc
             
-        # Update price after the swap
-        current_price = pool_usdc / circulating_supply
-                
         # Staking mechanics and token burning
         total_stakable = circulating_supply + staked_tokens
         stake_weight = staked_tokens / total_stakable
         staker_alloc = monthly_revenue_apt * stake_weight
+
+        # Deflator matching burn
+        deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
+        deflator_balance -= deflator_matching_burn
+
+        # Burn the rest of revenue APT
+        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
+        circulating_supply -= revenue_apt_to_burn
+        total_supply -= (revenue_apt_to_burn + deflator_matching_burn)
         
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens
@@ -139,21 +142,15 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             target_stake_pct = min(annual_yield_pct * 2, 1.0)
         else:
             target_stake_pct = liquid_stake_pct if liquid_stake_pct is not None else 0
-        
+
         # Adjust voluntary staking
         target_stake_total = target_stake_pct * total_stakable
         staked_tokens = max(target_stake_total, investor_staked_tokens)
-        circulating_supply -= staked_tokens
+        circulating_supply = total_stakable - staked_tokens
 
-        # Burn the rest of revenue APT
-        revenue_apt_to_burn = monthly_revenue_apt - staker_alloc
-        
-        # Deflator matching burn
-        deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
-        deflator_balance -= deflator_matching_burn
-        total_supply -= (deflator_matching_burn + revenue_apt_to_burn)
+        # Update price after the swap
+        current_price = pool_usdc / circulating_supply
 
-                
         # Calculate metrics
         fdv = current_price * total_supply
         market_cap = current_price * circulating_supply
