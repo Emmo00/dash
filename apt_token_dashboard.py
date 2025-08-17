@@ -133,7 +133,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             current_price = pool_usdc / circulating_supply if circulating_supply > 0 else current_price
                 
         # Staking mechanics and token burning
-        stake_weight = staked_tokens / total_supply if total_supply > 0 else 0
+        total_stakable = holder_liquid + (staked_tokens - investor_staked_tokens)
+        stake_weight = staked_tokens / total_stakable if total_stakable > 0 else 0
         
         # Deflator matching burn
         deflator_matching_burn = min(monthly_revenue_apt, deflator_balance)
