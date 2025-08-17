@@ -348,6 +348,9 @@ with summary_col3:
     st.write(f"• Annual Revenue: ${annual_kwh * KWH_PRICE/1e6:.1f}M")
     st.write(f"• Total Burned: {df['Cumulative_Burned'].iloc[-1]/1e6:.1f}M APT")
 
+
+st.dataframe(df, use_container_width=True) # Displays an interactive table filling the container width
+
 # Footer
 st.markdown("---")
 st.markdown("*This dashboard simulates the APT token economy based on the specified parameters. Actual performance may vary significantly.*")
