@@ -201,7 +201,7 @@ with col1:
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=round(df['Annual_Yield_Pct'], 2), name='Annual Yield (%)'), 
+        go.Scatter(x=df['Month'], y=round(df['Annual_Yield_Pct'], 2), name='Annual Yield (%)', 
                   line=dict(color='#FFA15A', width=2, dash='dot')),
         row=2, col=1, secondary_y=True
     )
