@@ -14,12 +14,12 @@ st.markdown("Interactive simulation of the APT token economy with solar infrastr
 # Sidebar controls
 st.sidebar.header("📊 Economic Parameters")
 
-# Mode toggle for staking calculation
-mode = st.sidebar.radio(
-    "Staking Calculation Mode",
-    ["Manual Control", "Yield-Based Auto Staking"],
-    help="Manual: Use slider to set staking %. Yield-Based: Staking % = f(2x) of annual yield %"
-)
+# # Mode toggle for staking calculation
+# mode = st.sidebar.radio(
+#     "Staking Calculation Mode",
+#     ["Manual Control", "Yield-Based Auto Staking"],
+#     help="Manual: Use slider to set staking %. Yield-Based: Staking % = f(2x) of annual yield %"
+# )
 
 # Core parameters
 investor_allocation = st.sidebar.slider(
@@ -34,14 +34,14 @@ investor_stake_duration = st.sidebar.slider(
     help="How long investor tokens are locked in staking"
 )
 
-if mode == "Manual Control":
-    liquid_stake_pct = st.sidebar.slider(
-        "Liquid Token Stake %", 
-        min_value=0.0, max_value=100.0, value=50.0, step=5.0,
-        help="Percentage of liquid tokens that are staked"
-    ) / 100
-else:
-    st.sidebar.markdown("*Liquid Token Stake % calculated automatically based on yield*")
+# if mode == "Manual Control":
+#     liquid_stake_pct = st.sidebar.slider(
+#         "Liquid Token Stake %", 
+#         min_value=0.0, max_value=100.0, value=50.0, step=5.0,
+#         help="Percentage of liquid tokens that are staked"
+#     ) / 100
+# else:
+st.sidebar.markdown("*Liquid Token Stake % calculated automatically based on yield*")
 
 # Constants
 TOTAL_SUPPLY = 100_000_000  # 100M tokens
@@ -90,18 +90,6 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         else:
             current_annual_revenue = annual_revenue_usd
 
-        # Token unlock schedule
-        if month >= stake_duration * 12:
-            if investor_staked_tokens > 0:
-                circulating_supply += investor_staked_tokens
-                staked_tokens -= investor_staked_tokens
-                investor_staked_tokens = 0
-
-        if month >= 36:
-            if month == 36:
-                circulating_supply += dev_locked
-                dev_locked = 0
-
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
         monthly_revenue_usd = current_annual_revenue / 12
         # Use a fixed price or gradually appreciating price
@@ -118,13 +106,23 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
         # Determine target stake percentage
-        if mode == "Yield-Based Auto Staking":
-            # if annual_yield_pct < 0.08:
-            #     target_stake_pct = 0
-            # else:
-            target_stake_pct = min(annual_yield_pct * 2, .99)
-        else:
-            target_stake_pct = liquid_stake_pct if liquid_stake_pct is not None else 0
+
+        # if annual_yield_pct < 0.08:
+        #     target_stake_pct = 0
+        # else:
+        target_stake_pct = min(annual_yield_pct * 2, .99)
+
+        # Token unlock schedule
+        if month >= stake_duration * 12:
+            if investor_staked_tokens > 0:
+                circulating_supply += investor_staked_tokens
+                staked_tokens -= investor_staked_tokens
+                investor_staked_tokens = 0
+
+        if month >= 36:
+            if month == 36:
+                circulating_supply += dev_locked
+                dev_locked = 0
 
         # Adjust voluntary staking
         target_stake_total = target_stake_pct * total_stakable
@@ -163,10 +161,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
     return pd.DataFrame(results)
 
 # Calculate results
-if mode == "Manual Control":
-    df = calculate_token_economics(investor_allocation, investor_stake_duration, liquid_stake_pct, mode)
-else:
-    df = calculate_token_economics(investor_allocation, investor_stake_duration, None, mode)
+df = calculate_token_economics(investor_allocation, investor_stake_duration, None, mode)
 
 # Main dashboard
 col1, col2 = st.columns([2, 1])
