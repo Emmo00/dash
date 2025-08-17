@@ -149,6 +149,8 @@ def calculate_token_economics(investor_alloc, stake_duration):
             'Tokens_Burned': revenue_apt_to_burn + deflator_matching_burn,
             'Deflator_Balance': deflator_balance,
             'Annual_Yield_Pct': annual_yield_pct * 100,  # As percentage for display
+            'Stake_Target': target_stake_total,
+            'Stake_Tokens': staked_tokens,
             'Stake_Percentage': stake_weight * 100,
             'Staker_Allocation': staker_alloc
         })
@@ -261,7 +263,6 @@ with col3:
     st.plotly_chart(fig_burn, use_container_width=True)
 
 with col4:
-    # Revenue breakdown
     fig_deflation = make_subplots(specs=[[{"secondary_y": True}]])
     fig_deflation.add_trace(go.Scatter(
         x=df['Month'], y=df['Deflator_Balance']/1000,
@@ -270,12 +271,17 @@ with col4:
     ))
 
     fig_deflation.add_trace(
-        go.Scatter(x=df['Month'], y=df['Stake_Percentage'], name='Percentage APT Staked (%)', 
+        go.Scatter(x=df['Month'], y=df['Stake_Target']/1000, name='Target Percentage APT Staked (k)', 
                   line=dict(color='#FFA15A', width=2, dash='dot')), secondary_y=True
+    )
+
+    fig_deflation.add_trace(
+        go.Scatter(x=df['Month'], y=df['Stake_Tokens']/1000, name='Actual APT Staked (k)', 
+                  line=dict(width=2, dash='dot')), secondary_y=True
     )
     
     fig_deflation.update_layout(
-        title="Deflator Balance Burn",
+        title="Supply Crunch",
         height=400, showlegend=True, hovermode='x unified'
     )
 
