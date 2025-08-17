@@ -86,10 +86,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         # Deployment phase (first 10 months)
         if month < DEPLOYMENT_MONTHS:
             deployment_progress = (month + 1) / DEPLOYMENT_MONTHS
-            current_capacity = solar_capacity_mw * deployment_progress
             current_annual_revenue = annual_revenue_usd * deployment_progress
         else:
-            current_capacity = solar_capacity_mw
             current_annual_revenue = annual_revenue_usd
 
         # Token unlock schedule
@@ -161,8 +159,8 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
             'Tokens_Burned': revenue_apt_to_burn + deflator_matching_burn,
             'Deflator_Balance': deflator_balance,
             'Annual_Yield_Pct': annual_yield_pct * 100,  # As percentage for display
-            'Stake_Percentage': (staked_tokens / total_supply * 100),
-            'Solar_Capacity_MW': current_capacity
+            'Stake_Percentage': stake_weight * 100,
+            'Staker_Allocation': staker_alloc
         })
 
     return pd.DataFrame(results)
@@ -245,7 +243,7 @@ with col2:
     st.metric("Stake %", f"{latest['Stake_Percentage']:.1f}%")
     
     st.subheader("🏭 Solar Infrastructure")
-    st.metric("Capacity", f"{latest['Solar_Capacity_MW']:.1f} MW")
+    # st.metric("Capacity", f"{latest['Solar_Capacity_MW']:.1f} MW")
     st.metric("Monthly Revenue", f"${latest['Monthly_Revenue_USD']:,.0f}")
     st.metric("Deflator Balance", f"{latest['Deflator_Balance']/1e6:.1f}M APT")
 
