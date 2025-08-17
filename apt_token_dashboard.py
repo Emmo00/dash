@@ -110,7 +110,7 @@ def calculate_token_economics(investor_alloc, stake_duration, liquid_stake_pct=N
         
         # Update price based on supply changes (burns) rather than AMM
         # Price appreciates as supply decreases
-        supply_ratio = total_supply / TOTAL_SUPPLY
+        supply_ratio = circulating_supply / (TOTAL_SUPPLY * 60)
         current_price = initial_price / supply_ratio  # Price inversely related to supply
 
         # Staking mechanics and token burning
