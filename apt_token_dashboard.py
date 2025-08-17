@@ -29,14 +29,14 @@ investor_allocation = st.sidebar.slider(
 ) / 100
 
 investor_stake_duration = st.sidebar.slider(
-    "Investor Stake Duration (years)", 
-    min_value=0.5, max_value=5.0, value=2.0, step=0.5,
+    "Investor Stake Duration (months)", 
+    min_value=0, max_value=60, value=24, step=1,
     help="How long investor tokens are locked in staking"
 )
 
 TOTAL_SUPPLY =  st.sidebar.slider(
     "Total Supply", 
-    min_value=500_000, max_value=1_000_000_000, value=100_000_000, step=100_000,
+    min_value=500_000, max_value=1_000_000_000, value=100_000_000, step=1_000_000,
     help="Total token supply"
 )
 
@@ -131,7 +131,7 @@ def calculate_token_economics(investor_alloc, stake_duration):
             target_stake_pct = min(annual_yield_pct * 2, .99)
 
         # Token unlock schedule
-        if month >= stake_duration * 12 and investor_staked_tokens > 0:
+        if month >= stake_duration and investor_staked_tokens > 0:
             investor_staked_tokens = 0
 
         if month >= 36 and dev_locked > 0:
