@@ -176,32 +176,32 @@ with col1:
     
     # Price and valuation
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=round(df['Price'], name='Token Price ($)', 2), 
+        go.Scatter(x=df['Month'], y=round(df['Price'], 2), name='Token Price ($)', 
                   line=dict(color='#00CC96', width=3)),
         row=1, col=1
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=round(df['FDV']/1e6, name='FDV ($M)', 2), 
+        go.Scatter(x=df['Month'], y=round(df['FDV']/1e6, 2), name='FDV ($M)', 
                   line=dict(color='#AB63FA', width=2, dash='dash')),
         row=1, col=1, secondary_y=True
     )
     
     # Supply and staking
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=df['Circulating_Supply']/1e6, name='Circulating Supply (M)', 2), 
+        go.Scatter(x=df['Month'], y=df['Circulating_Supply']/1e6, 2), name='Circulating Supply (M)', 
                   line=dict(color='#FF6692', width=3)),
         row=2, col=1
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=round(df['Staked_Tokens']/1e6, name='Staked Tokens (M)', 2), 
+        go.Scatter(x=df['Month'], y=round(df['Staked_Tokens']/1e6, 2), name='Staked Tokens (M)', 
                   line=dict(color='#19D3F3', width=2)),
         row=2, col=1
     )
     
     fig.add_trace(
-        go.Scatter(x=df['Month'], y=round(df['Annual_Yield_Pct'], name='Annual Yield (%)', 2), 
+        go.Scatter(x=df['Month'], y=round(df['Annual_Yield_Pct'], 2), name='Annual Yield (%)'), 
                   line=dict(color='#FFA15A', width=2, dash='dot')),
         row=2, col=1, secondary_y=True
     )
