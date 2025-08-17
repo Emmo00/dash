@@ -243,7 +243,7 @@ with col3:
     # Cumulative burn chart
     df['Cumulative_Burned'] = df['Tokens_Burned'].cumsum()
     
-    fig_burn = go.Figure()
+    fig_burn = go.Figure(specs=[[{"secondary_y": True}])
     fig_burn.add_trace(go.Scatter(
         x=df['Month'], y=df['Cumulative_Burned']/1e6,
         name='Cumulative Burned (M)',
