@@ -67,11 +67,11 @@ with st.sidebar.expander("Cashflow Setup"):
     )
 
 with st.sidebar.expander("Market Setup"):
-    st.subheader("⚠️ Caution!!")
+    st.markdown("⚠️ Caution!!")
     
     stake_yield_factor = st.slider(
         "Staked Percentage Yield Factor", 
-        min_value=0.1, max_value=3, value=2, step=0.1,
+        min_value=0.1, max_value=3.0, value=2.0, step=0.1,
         help="Market Yield Offering to benchmark against"
     )
 
