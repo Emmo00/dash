@@ -35,29 +35,29 @@ with st.sidebar.expander("Token Setup"):
         help="How long investor tokens are locked in staking"
     )
     
-    TOTAL_SUPPLY =  st.slider(
+    TOTAL_SUPPLY = st.slider(
         "Total Supply", 
         min_value=500_000, max_value=1_000_000_000, value=100_000_000, step=1_000_000,
         help="Total token supply"
     )
     
 with st.sidebar.expander("Cashflow Setup"):
-    FUNDING_AMOUNT =  st.slider(
+    FUNDING_AMOUNT = st.slider(
         "Funding Amount ($)", 
         min_value=1_000_000, max_value=50_000_000, value=10_000_000, step=1_000_000,
         help="Funding amount"
     )
     
-    SOLAR_COST_PER_MW =  st.slider(
-        "Solar Cost per Mega Watt Capacity ($)", 
+    SOLAR_COST_PER_MW = st.slider(
+        "Solar Cost per Megawatt Capacity ($)", 
         min_value=500_000, max_value=1_000_000, value=700_000, step=100_000,
         help="Solar Cost per Mega Watt Capacity"
     )
     
-    KWH_PRICE =  st.slider(
+    KWH_PRICE = st.slider(
         "Price for KiloWatt Hour ($)", 
         min_value=0.06, max_value=0.20, value=0.17, step=0.01,
-        help="Kilo Watt Price"
+        help="Kilowatt Price"
     )
     
     DEPLOYMENT_MONTHS = st.slider(
@@ -67,15 +67,17 @@ with st.sidebar.expander("Cashflow Setup"):
     )
 
 with st.sidebar.expander("Market Setup"):
-    competitive_yield =  st.slider(
-        "Competiive Market Yield (%)", 
-        min_value=4, max_value=20, value=8, step=1,
+    st.subheader("⚠️ Caution!!")
+    
+    stake_yield_factor = st.slider(
+        "Staked Percentage Yield Factor", 
+        min_value=0.1, max_value=3, value=2, step=0.1,
         help="Market Yield Offering to benchmark against"
     )
 
-    stake_yield_factor =  st.slider(
-        "Staked Percentage Yield Factor", 
-        min_value=0.1, max_value=3, value=2, step=0.1,
+    competitive_yield = st.slider(
+        "Competiive Market Yield (%)", 
+        min_value=4, max_value=20, value=8, step=1,
         help="Market Yield Offering to benchmark against"
     )
 
