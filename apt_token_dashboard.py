@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
 
-# Page configurat
+# Page configuration
 st.set_page_config(page_title="APT Token Economy Dashboard (Alliance)", layout="wide")
 
 st.title("🪙 APT (Alliance Power Token) Economy Simulation Dashboard")
@@ -13,13 +13,6 @@ st.markdown("Interactive simulation of the APT token economy with solar infrastr
 
 # Sidebar controls
 st.sidebar.header("📊 Economic Parameters")
-
-# # Mode toggle for staking calculation
-# mode = st.sidebar.radio(
-#     "Staking Calculation Mode",
-#     ["Manual Control", "Yield-Based Auto Staking"],
-#     help="Manual: Use slider to set staking %. Yield-Based: Staking % = f(2x) of annual yield %"
-# )
 
 # Core parameters
 with st.sidebar.expander("Simulation Setup"):
@@ -31,7 +24,7 @@ with st.sidebar.expander("Simulation Setup"):
     
 with st.sidebar.expander("Token Setup"):
     investor_allocation = st.slider(
-        "Investor Allocation %", 
+        "Investor Allocation (%)", 
         min_value=0.0, max_value=80.0, value=40.0, step=1.0,
         help="Percentage of total supply allocated to investors"
     ) / 100
@@ -50,19 +43,19 @@ with st.sidebar.expander("Token Setup"):
     
 with st.sidebar.expander("Cashflow Setup"):
     FUNDING_AMOUNT =  st.slider(
-        "Funding Amount", 
+        "Funding Amount ($)", 
         min_value=1_000_000, max_value=50_000_000, value=10_000_000, step=1_000_000,
         help="Funding amount"
     )
     
     SOLAR_COST_PER_MW =  st.slider(
-        "Solar Cost per Mega Watt Capacity", 
+        "Solar Cost per Mega Watt Capacity ($)", 
         min_value=500_000, max_value=1_000_000, value=700_000, step=100_000,
         help="Solar Cost per Mega Watt Capacity"
     )
     
     KWH_PRICE =  st.slider(
-        "Price for KiloWatt, per Hour", 
+        "Price for KiloWatt Hour ($)", 
         min_value=0.06, max_value=0.20, value=0.17, step=0.01,
         help="Kilo Watt Price"
     )
@@ -71,6 +64,19 @@ with st.sidebar.expander("Cashflow Setup"):
         "Deployment Months", 
         min_value=1, max_value=24, value=10, step=1,
         help="Time to deploy Projects"
+    )
+
+with st.sidebar.expander("Market Setup"):
+    competitive_yield =  st.slider(
+        "Competiive Market Yield (%)", 
+        min_value=4, max_value=20, value=8, step=1,
+        help="Market Yield Offering to benchmark against"
+    )
+
+    stake_yield_factor =  st.slider(
+        "Staked Percentage Yield Factor", 
+        min_value=0.1, max_value=3, value=2, step=0.1,
+        help="Market Yield Offering to benchmark against"
     )
 
 st.sidebar.markdown("*Liquid Token Stake % calculated automatically based on yield*")
@@ -132,10 +138,10 @@ def calculate_token_economics(investor_alloc, stake_duration):
         annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
         # Determine target stake percentage
 
-        if annual_yield_pct < 0.08:
+        if annual_yield_pct < (competitive_yield / 100):
             target_stake_pct = 0
         else:
-            target_stake_pct = min(annual_yield_pct * 2, .99)
+            target_stake_pct = min(annual_yield_pct * stake_yield_factor, 1)
 
         # Token unlock schedule
         if month >= stake_duration and investor_staked_tokens > 0:
