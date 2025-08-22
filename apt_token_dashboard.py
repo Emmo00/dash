@@ -65,6 +65,18 @@ with st.sidebar.expander("Cashflow Setup"):
         min_value=1, max_value=24, value=10, step=1,
         help="Time to deploy Projects"
     )
+    
+    OPEX_ALLOCATION = st.slider(
+        "OPEX Allocation (%)", 
+        min_value=0.0, max_value=20.0, value=10.0, step=0.5,
+        help="Percentage of revenue allocated to operational expenses"
+    ) / 100
+    
+    REINVESTMENT_ALLOCATION = st.slider(
+        "Reinvestment Allocation (%)", 
+        min_value=0.0, max_value=20.0, value=10.0, step=0.5,
+        help="Percentage of revenue allocated to reinvestments"
+    ) / 100
 
 with st.sidebar.expander("Market Setup"):
     st.markdown("⚠️ Caution!!")
@@ -76,7 +88,7 @@ with st.sidebar.expander("Market Setup"):
     )
 
     competitive_yield = st.slider(
-        "Competiive Market Yield (%)", 
+        "Competitive Market Yield (%)", 
         min_value=4, max_value=20, value=8, step=1,
         help="Market Yield Offering to benchmark against"
     )
@@ -125,8 +137,12 @@ def calculate_token_economics(investor_alloc, stake_duration):
 
         # Revenue in APT tokens (buying APT with USD revenue via AMM)
         monthly_revenue_usd = current_annual_revenue / 12
+        # Allocate revenue to OPEX and reinvestment
+        opex_allocation_usd = monthly_revenue_usd * OPEX_ALLOCATION
+        reinvestment_allocation_usd = monthly_revenue_usd * REINVESTMENT_ALLOCATION
+        net_revenue_usd = monthly_revenue_usd - (opex_allocation_usd + reinvestment_allocation_usd)
         # Use a fixed price or gradually appreciating price
-        monthly_revenue_apt = monthly_revenue_usd / current_price
+        monthly_revenue_apt = net_revenue_usd / current_price
         
         # Staking mechanics and token burning
         total_stakable = circulating_supply + staked_tokens
@@ -139,7 +155,6 @@ def calculate_token_economics(investor_alloc, stake_duration):
         # Calculate annual yield for stakers
         annual_yield_pct = (staker_alloc * 12) / staked_tokens if staked_tokens > 0 else 0
         # Determine target stake percentage
-
         if annual_yield_pct < (competitive_yield / 100):
             target_stake_pct = 0
         else:
@@ -178,6 +193,9 @@ def calculate_token_economics(investor_alloc, stake_duration):
             'FDV': fdv,
             'Market_Cap': market_cap,
             'Monthly_Revenue_USD': monthly_revenue_usd,
+            'OPEX_Allocation_USD': opex_allocation_usd,
+            'Reinvestment_Allocation_USD': reinvestment_allocation_usd,
+            'Net_Revenue_USD': net_revenue_usd,
             'Monthly_Revenue_APT': monthly_revenue_apt,
             'Tokens_Burned': revenue_apt_to_burn + deflator_matching_burn,
             'Deflator_Balance': deflator_balance,
@@ -265,8 +283,10 @@ with col2:
     st.metric("Stake %", f"{latest['Stake_Percentage']:.1f}%")
     
     st.subheader("🏭 Solar Infrastructure")
-    # st.metric("Capacity", f"{latest['Solar_Capacity_MW']:.1f} MW")
     st.metric("Monthly Revenue", f"${latest['Monthly_Revenue_USD']:,.0f}")
+    st.metric("OPEX Allocation", f"${latest['OPEX_Allocation_USD']:,.0f}")
+    st.metric("Reinvestment Allocation", f"${latest['Reinvestment_Allocation_USD']:,.0f}")
+    st.metric("Net Revenue", f"${latest['Net_Revenue_USD']:,.0f}")
     st.metric("Deflator Balance", f"{latest['Deflator_Balance']/1e6:.1f}M APT")
 
 # Additional analysis
@@ -344,6 +364,8 @@ with summary_col2:
     price_app = ((latest['Price'] / initial_price_calc) - 1) * 100 if initial_price_calc > 0 else 0
     st.write(f"• Price Appreciation: {price_app:.1f}%")
     st.write(f"• Total Revenue (4Y): ${df['Monthly_Revenue_USD'].sum():,.0f}")
+    st.write(f"• Total OPEX (4Y): ${df['OPEX_Allocation_USD'].sum():,.0f}")
+    st.write(f"• Total Reinvestment (4Y): ${df['Reinvestment_Allocation_USD'].sum():,.0f}")
 
 with summary_col3:
     st.markdown("**Solar Infrastructure:**")
@@ -353,7 +375,6 @@ with summary_col3:
     st.write(f"• Annual Generation: {annual_kwh/1e6:.1f} GWh")
     st.write(f"• Annual Revenue: ${annual_kwh * KWH_PRICE/1e6:.1f}M")
     st.write(f"• Total Burned: {df['Cumulative_Burned'].iloc[-1]/1e6:.1f}M APT")
-
 
 st.dataframe(df, use_container_width=True) # Displays an interactive table filling the container width
 
